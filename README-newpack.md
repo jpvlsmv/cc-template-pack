@@ -8,7 +8,7 @@ My new pack relies on some other things
 I have never released this pack before
 
 ## Data Flow diagram
-It's possible to make a diagram in the markdown:
+It's possible to make a diagram in the markdown.  In more complex packs, I'll move this to a separate pipelines.md file.
 ```mermaid
 flowchart TD
 subgraph pack[My New Pack]
