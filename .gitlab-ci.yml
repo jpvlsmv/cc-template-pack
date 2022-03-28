@@ -1,0 +1,12 @@
+# Simple CI for Stream pack
+build_criblfile:
+  stage: build
+  image: alpine:latest
+  before_script:
+    - apk update && apk add --no-cache git
+  script:
+    - sed -i package.json -e s/!!GITREV!!/$(git describe --tags --long --match 'v*')/
+    - tar cvz -f ${CI_PROJECT_NAME}.crbl *
+  artifacts:
+    paths:
+      - ${CI_PROJECT_NAME}.crbl
