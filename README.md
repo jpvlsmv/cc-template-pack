@@ -6,8 +6,9 @@ This Template Pack provides the required structure and some best practices for p
 2. Edit package.json
 3. Review LICENSE
 4. Move this README.md out of the way, and put README-newpack.md in its place.
-5. Create the pack 
-6. Configure the automatic testing and release management (optional)
+5. Put in your stuff
+6. Optional: tag a Release so that the workflow actions take place and create your .crbl file
+7. Configure the automatic testing and release management (optional)
 
 ## Structure:
 * README-newpack.md
