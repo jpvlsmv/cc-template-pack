@@ -1,0 +1,26 @@
+id: default
+groups: {}
+comments: []
+routes:
+  - id: 2U58nB
+    name: datatype1
+    final: true
+    disabled: false
+    pipeline: datatype1
+    description: Direct data that looks like pattern1 to its pipeline
+    clones: []
+    enableOutputExpression: false
+    outputExpression: null
+    filter: _raw.includes("pattern1")
+    output: default
+  - id: default
+    name: default
+    final: true
+    disabled: false
+    pipeline: main
+    description: ""
+    clones: []
+    enableOutputExpression: false
+    outputExpression: null
+    filter: "true"
+    output: default
