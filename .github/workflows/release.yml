@@ -15,6 +15,9 @@ jobs:
       - name: Get GitHub slug info
         uses: rlespinasse/github-slug-action@3.5.1
 
+      - name: Tweak release info in package.json
+        run: sed -i package.json -e s/!!GITREV!!/$(git describe --tags --long --match 'v*')/
+
       - name: Pack it up!
         run: tar -czf /tmp/${{ github.event.repository.name }}-${{ env.GITHUB_SHA_SHORT }}-${{ env.GITHUB_REF_SLUG_CS }}.crbl *
 
