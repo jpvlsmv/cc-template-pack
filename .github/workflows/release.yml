@@ -44,27 +44,3 @@ jobs:
         if: ${{ success() }}
         run: |
           echo "TIMESTAMP=$(date +%s -d "${{ steps.release_info.outputs.published_at }}")" >> $GITHUB_ENV
-
-      - name: Slack notification (production releases only)
-        if: ${{ success() && steps.release_info.outputs.prerelease == 'false' }}
-        id: slack
-        uses: wearerequired/slack-messaging-action@v1
-        with:
-          bot_token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
-          payload: >-
-            {
-              "attachments": [
-                {
-                  "fallback": "${{ github.event.repository.name }} has been updated.",
-                  "color": "#00cccc",
-                  "pretext": "A new release for ${{ github.event.repository.name }} was published on Github!",
-                  "title": "${{ github.event.repository.name }} - ${{ steps.release_info.outputs.tag_name }}",
-                  "title_link": "${{ steps.release_info.outputs.html_url }}",
-                  "text": ${{ toJSON(steps.release_info.outputs.body) }},
-                  "footer": "PackBot",
-                  "footer_icon": "https://cribl.io/favicon.ico",
-                  "ts": ${{ env.TIMESTAMP }}
-                }
-              ]
-            }
