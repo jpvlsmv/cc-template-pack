@@ -1,6 +1,6 @@
 {
   "name":"cc-template-pack",
-  "version":"0.0.3",
+  "version":"0.1.0",
   "author":"Joe Moore (jpvlsmv) - cc",
   "description":"Template to provide the required elements and best practices of a pack - !!GITREV +datatype1!!",
   "displayName":"cc-template-pack"
