@@ -11,7 +11,7 @@ routes:
     clones: []
     enableOutputExpression: false
     outputExpression: null
-    filter: _raw.includes("pattern1")
+    filter: _raw.includes("datatype1")
     output: default
   - id: default
     name: default
