@@ -51,9 +51,11 @@ this document and the LICENSE, the terms of the LICENSE apply.
     * {function_name}
 
 ## Getting help
-Help and support for the cc-template-pack is available on a best-effort basis 
-at https://github.com/jpvlsmv/cc-template-pack.  Help and support for a pack
-based on cc-template-pack is the responsibility of that pack's developer.
+Help and support for the cc-template-pack is available on a best-effort basis
+at [https://github.com/jpvlsmv/cc-template-pack/issues]
+and [https://github.com/jpvlsmv/cc-template-pack/wiki].  
+
+Help and support for a pack based on cc-template-pack is the responsibility of that pack's developer.
 
 ## References
 https://cribl-community.slack.com/files/U01C35EMQ01/F0371V25AQY/wednesday_windows_pack_training.pptx
