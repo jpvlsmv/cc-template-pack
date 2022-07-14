@@ -57,6 +57,10 @@ and [https://github.com/jpvlsmv/cc-template-pack/wiki].
 
 Help and support for a pack based on cc-template-pack is the responsibility of that pack's developer.
 
+## License
+---
+This Pack uses the following license: [`Apache 2.0`](https://github.com/jpvlsmv/cc-template-pack/blob/main/LICENSE).
+
 ## References
 https://cribl-community.slack.com/files/U01C35EMQ01/F0371V25AQY/wednesday_windows_pack_training.pptx
 
