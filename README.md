@@ -10,6 +10,10 @@ This Template Pack provides the required structure and some best practices for p
 6. Optional: tag a Release so that the workflow actions take place and create your .crbl file
 7. Configure the automatic testing and release management (optional)
 
+## Documentation
+Documentation is stored in the template content itself when possible.  Additional information
+is also stored in the [github wiki pages](https://github.com/jpvlsmv/cc-template-pack/wiki) for the project.
+
 ### Note on licensing:
 The cc-template-pack is released under the Apache2 license, as per the LICENSE file in the 
 repository.  The point of the template pack is to facilitate creation of other packs, which
@@ -58,7 +62,6 @@ and [https://github.com/jpvlsmv/cc-template-pack/wiki].
 Help and support for a pack based on cc-template-pack is the responsibility of that pack's developer.
 
 ## License
----
 This Pack uses the following license: [`Apache 2.0`](https://github.com/jpvlsmv/cc-template-pack/blob/main/LICENSE).
 
 ## References
