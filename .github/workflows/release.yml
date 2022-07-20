@@ -16,7 +16,10 @@ jobs:
         uses: rlespinasse/github-slug-action@3.5.1
 
       - name: Tweak release info in package.json
-        run: sed -i package.json -e s/!!GITREV.*!!/$(git describe --tags --long --match 'v*')/
+        run:
+          - DIRTY=$(git describe --tags --long --match v0.1.1 | awk -F- '$2!=0{print "+"$2}')
+          - sed -i package.json -e s/!!GITDESCRIBE.*!!/$(git describe --tags --long --match 'v*')/
+          - sed -i package.json -e s/!!GITVER.*!!/$(git describe --tags --long --match 'v*' | cut -d- -f1 | tr -d v)${DIRTY}/
 
       - name: Pack it up!
         run: tar -cvzf /tmp/${{ github.event.repository.name }}-${{ env.GITHUB_SHA_SHORT }}-${{ env.GITHUB_REF_SLUG_CS }}.crbl *
