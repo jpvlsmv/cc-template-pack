@@ -18,8 +18,9 @@ jobs:
       - name: Tweak release info in package.json
         run: |
           GD=$(git describe --tags --long --match 'v*') ; \
+          GV=$(echo ${GD} | cut -d- -f1 | tr -d v)$(echo ${GD} | awk -F- '$2!=0{print "+"$2}')
           sed -i package.json -e s/!!GITDESCRIBE.*!!/${GD}/ ; \
-          sed -i package.json -e s/!!GITVER.*!!/$(echo ${GD} | cut -d- -f1 | tr -d v)$(echo ${GD} | awk -F- '$2!=0{print "+"$2}')/
+          sed -i package.json -e s/!!GITVER.*!!/${GV}/
 
       - name: Pack it up!
         run: tar -cvzf /tmp/${{ github.event.repository.name }}-${{ env.GITHUB_SHA_SHORT }}-${{ env.GITHUB_REF_SLUG_CS }}.crbl *
