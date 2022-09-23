@@ -1,0 +1,18 @@
+functions:
+  - id: comment
+    filter: "true"
+    disabled: null
+    conf:
+      comment: >-
+        This pipeline parses and reassembles datatype #1
+
+
+        The data comes in as a |-delimited line of key=value pairs, having already been split into \n newline-separated events.
+
+
+        We need to parse out the pieces, do some transformations, and reassemble it as a smaller event
+  - id: comment
+    filter: "true"
+    disabled: null
+    conf:
+      comment: This is a minor local change that I will add to the pack.
