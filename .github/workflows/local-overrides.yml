@@ -23,5 +23,5 @@ jobs:
         run: |
           find $GITHUB_WORKSPACE/local -type f | while read localfile ; do
             echo "******** File $localfile is not in the default directory!"
-            diff -nwu ${localfile/local/default} ${localfile}
+            diff -Nwu ${localfile/local/default} ${localfile}
           done
