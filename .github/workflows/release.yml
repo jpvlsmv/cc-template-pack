@@ -1,5 +1,10 @@
 name: Build Release
 on:
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: Git reference (Optional)
+        required: false
   push:
     tags:
       - 'v?[0-9]+.[0-9]+.[0-9]+'
@@ -9,8 +14,16 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Checkout (latest)
+        uses: actions/checkout@v3
+        if: github.event.inputs.git-ref == ''
+        
+      - name: Checkout (specific ref)
+        uses: actions/checkout@v3
+        if: github.event.inputs.git-ref != ''
+        with:
+          ref: ${{github.event.inputs.git-ref}}
+          fetch-depth: 0
 
       - name: Get GitHub slug info
         uses: rlespinasse/github-slug-action@3.5.1
@@ -28,9 +41,16 @@ jobs:
 
       - name: Pack it up!
         run: tar -cvzf /tmp/${{ github.event.repository.name }}-${{ env.GITHUB_SHA_SHORT }}-${{ env.GITHUB_REF_SLUG_CS }}.crbl *
+        
+      - name: Upload artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-${{ env.GITHUB_SHA_SHORT }}-${{ env.GITHUB_REF_SLUG_CS }}.crbl
+          path: /tmp/${{ github.event.repository.name }}-${{ env.GITHUB_SHA_SHORT }}-${{ env.GITHUB_REF_SLUG_CS }}.crbl
 
       - name: Release
-        if: ${{ success() }}
+        if: ${{ success() && github.event.inputs.git-ref == '' }}
         id: release
         uses: softprops/action-gh-release@5e3f23f92c903aac25270f66388fdcb366c5b549
         with:
@@ -40,7 +60,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get release info
-        if: ${{ success() }}
+        if: ${{ success() && github.event.inputs.git-ref == '' }}
         id: release_info
         uses: cardinalby/git-get-release-action@1.1.1
         with:
@@ -49,6 +69,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract timestamp
-        if: ${{ success() }}
+        if: ${{ success() && github.event.inputs.git-ref == '' }}
         run: |
           echo "TIMESTAMP=$(date +%s -d "${{ steps.release_info.outputs.published_at }}")" >> $GITHUB_ENV
