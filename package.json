@@ -1,6 +1,6 @@
 {
   "name":"cc-template-pack",
-  "version":"!!GITVER!!",
+  "version":"0.2.2+PRE",
   "author":"Joe Moore (jpvlsmv) - cc",
   "description":"Template to provide the required elements and best practices of a pack - !!GITDESCRIBE!!",
   "displayName":"cc-template-pack"
