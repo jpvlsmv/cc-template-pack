@@ -1,0 +1,39 @@
+name: Pull pack from Stream instance
+on: 
+  workflow_dispatch:
+    inputs:
+      api-base-url:
+        description: Cribl API base url
+        required: true
+      bearer-token:
+        description: Token for API authentication
+        required: true
+
+jobs:
+  connectivity-test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Checking health (non-authenticated)"
+      - run: |
+          curl -sS "${{ inputs.api-base-url}}v1/health" -H "accept: application/json"
+      - run: echo "Checking system info (authenticated)"
+      - run: |
+          curl -sS "${{ inputs.api-base-url}}v1/system/info" -H "accept: application/json" -H "Authorization: Bearer ${{ inputs.bearer-token }}"
+  fetch-pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch current version
+        uses: actions/checkout@v3
+
+      - run: |
+          echo "Extracting pack modifications for ${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}"
+          curl -v "${{ inputs.api-base-url}}v1/m/default/packs/${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}/export?mode=merge&dest=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" \
+            -H "Authorization: Bearer ${{ inputs.bearer-token }}" | tar xvfz -
+      - name: Commit and send changes to repository
+        uses: EndBug/add-and-commit@v9.1.1
+        with:
+          author_name: Import automation
+          default_author: github_actor
+          message: "Workflow import by ${{ github.job }} init by ${{github.triggering_actor}}"
+          new_branch: "pull-pack-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
+          push: true
