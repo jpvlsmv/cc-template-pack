@@ -29,6 +29,8 @@ jobs:
           echo "Extracting pack modifications for ${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}"
           curl -v "${{ inputs.api-base-url}}v1/m/default/packs/${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}/export?mode=merge&dest=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" \
             -H "Authorization: Bearer ${{ inputs.bearer-token }}" | tar xvfz -
+      - run: |
+          jq . < package.json > /tmp/package.json && cp /tmp/package.json package.json && rm /tmp/package.json
       - name: Commit and send changes to repository
         uses: EndBug/add-and-commit@v9.1.1
         with:
