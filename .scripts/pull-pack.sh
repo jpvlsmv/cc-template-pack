@@ -19,10 +19,10 @@ while getopts ":hg:d:" o ; do
 done
 shift $((OPTIND-1))
 CRIBL_API=$1
+[ -n "${CRIBL_API}" ] || ( echo 'Api Endpoint not specified' ; usage )
 
-set -o errexit
-[ -x $(which jq) ] || echo 'jq is required. See https://stedolan.github.io/jq/'
-[ -x $(which git) ] || echo 'git is required.'
+[ -x $(which jq) ] || ( echo 'jq is required. See https://stedolan.github.io/jq/' ; exit 1 )
+[ -x $(which git) ] || ( echo 'git is required.' ; exit 1)
 
 if [ -z "${CRIBL_TOKEN}" ]
 then
@@ -34,7 +34,7 @@ then
 
   # Attempt to fetch token
   AJ="application/json"
-  CRIBL_TOKEN=$(curl "${CRIBL_API#/}v1/auth/login" \
+  CRIBL_TOKEN=$(curl "${CRIBL_API#/}/v1/auth/login" \
                      -fsS -X POST -H "accept: $AJ" -H "Content-Type: $AJ"
                      -d "{\"username\":\"${CRIBL_USERNAME}\", \
                           \"password\":\"${CRIBL_PASSWORD}\"}"  \
