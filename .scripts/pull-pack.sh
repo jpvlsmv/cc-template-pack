@@ -44,7 +44,7 @@ fi
 AJ="application/json"
 curl -fsS -X POST -H "accept: $AJ" -H "Content-Type: $AJ" \
      -H "Authorization: Bearer $CRIBL_TOKEN" \
-     "${CRIBL_API#/}/v1/m/${groupname}/packs/${deployname}/export?mode=merge" \
+     "${CRIBL_API#/}/v1/m/${groupname}/packs/${deployname}/export?mode=merge&dest=$(basename $(git rev-parse --show-toplevel))" \
   | tar xfz - || exit 1
 
 # Reflow package.json because it usually gets mangled
