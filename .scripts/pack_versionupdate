@@ -29,8 +29,11 @@ function save_outlog {
         #   curl -d@$OUTF http://in.main.my-org.cribl.cloud:10080/
         # Or just print it on the original screen
         cat "${OUTF}" >&6
+        
+        # Clean up after ourselves
+        rm "${OUTF}"
 }
-OUTF=$(mktemp pack_versionupdate_XXXXXXXX.out)
+OUTF=$(mktemp --tmpdir pack_versionupdate_XXXXXXXX.out)
 exec 6>&1 7>&2 # Save stdout to FD 6 and stderr to FD 7
 exec >"${OUTF}" 2>&1
 trap save_outlog EXIT
