@@ -28,17 +28,17 @@ function save_outlog {
         # Post it to an HTTP input
         #   curl -d@$OUTF http://in.main.my-org.cribl.cloud:10080/
         # Or just print it on the original screen
-        cat "$OUTF" >&6
+        cat "${OUTF}" >&6
 }
-OUTF=$(mktemp pack_versionupdate.out)
+OUTF=$(mktemp pack_versionupdate_XXXXXXXX.out)
 exec 6>&1 7>&2 # Save stdout to FD 6 and stderr to FD 7
-exec >$OUTF 2>&1
+exec >"${OUTF}" 2>&1
 trap save_outlog EXIT
 
 #=================================================
 # The actual script starts here
 
-printf "Pack version update script - started $(date)\n"
+printf "Pack version update script - started $(date)\n\n"
 
 # For each group,
 for groupdir in groups/*
@@ -85,10 +85,10 @@ do
         fi #  $tagver != ${localver%+*}
 
         # Continuation of the Assessing... output above
-        printf "${localver} against tagged version ${tagver}.\n"
+        printf "against tagged version ${tagver}.\n"
 
         # Check this pack directory against what was in the repo at that tag
-        if git diff --quiet -wb $packtag HEAD -- . >/dev/null 2>&1 
+        if   git diff --quiet -wb $packtag HEAD -- . >/dev/null 2>&1 
         then
             printf "     No changes detected\n"
         else
