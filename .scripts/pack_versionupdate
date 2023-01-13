@@ -1,0 +1,115 @@
+#!/bin/bash
+# Script to update the version string in an installed pack
+# Joe Moore <jpvlsmv@gmail.com>
+# 2023-01-13
+#
+# Usage:
+# Run this script on your leader node or in a checkout of your repository
+#
+# Requirements:
+# Your cribl environment is under git version control
+# You have created a tag named "pack/some-pack-name-v#.#.#" that points to
+# the version of the pack you deployed
+#
+# Logging destination:
+#  - Use mktemp for a temporary storage place.
+#  - Write everything to that file.
+#  - When script finishes, put the output somewhere useful.  Pick one
+function save_outlog {
+        #exec 1>&6 2&>7 # Reset to orignal stdout (optional)
+
+        # Ways to handle output include:
+        # Send an email:
+        #   mail -s "pack_versionupdate results" root < $OUTF
+        # Run it through syslog
+        #   logger <$OUTF
+        # Stick it in a logs directory
+        #   cp $OUTF /var/log/cribl/pack_versionupdate.out-$(date +%Y%%d%H%M%S)
+        # Post it to an HTTP input
+        #   curl -d@$OUTF http://in.main.my-org.cribl.cloud:10080/
+        # Or just print it on the original screen
+        cat "${OUTF}" >&6
+}
+OUTF=$(mktemp pack_versionupdate_XXXXXXXX.out)
+exec 6>&1 7>&2 # Save stdout to FD 6 and stderr to FD 7
+exec >"${OUTF}" 2>&1
+trap save_outlog EXIT
+
+#=================================================
+# The actual script starts here
+
+printf "Pack version update script - started $(date)\n\n"
+
+# For each group,
+for groupdir in groups/*
+do
+    group=$(basename $groupdir)
+    printf "Assessing group $group\n"
+
+    # Walk through the packs for this group
+    for packdir in groups/$group/default/*
+    do
+        # We do not touch the cribl config directory
+        if [[ $(basename $packdir) == "cribl" ]] ; then continue ; fi
+
+        # What is the name of the pack we need to look at here
+        pack=$(basename $packdir)
+
+        pushd $packdir >/dev/null 2>/dev/null
+
+        # According to the files, what version do we have here?
+        localver=$(jq -r .version <package.json)
+        printf "  Assessing pack $pack (local version $localver), "
+
+        # Search for a pack/ git tag for this pack
+        packtag=$(git describe --tags --match "pack/$pack-v*" --abbrev=0 2>/dev/null)
+
+        if [[ $packtag == "" ]]
+        then
+            printf "No version tag found\n"
+            popd >/dev/null 2>/dev/null
+            continue
+            # Go on to the next pack
+        fi # packtag == ""
+
+        # Strip off the stuff before the version # in that tag
+        tagver=${packtag#pack/$pack-v}
+
+        if [[ $tagver != ${localver%+*} ]]
+        then
+            # Report a warning when there isn't a tag for this version
+            printf "\n  !! Version mismatch local:$localver -> tagged:$tagver\n"
+            popd >/dev/null 2>/dev/null
+            continue
+            # Go on to the next pack
+        fi #  $tagver != ${localver%+*}
+
+        # Continuation of the Assessing... output above
+        printf "against tagged version ${tagver}.\n"
+
+        # Check this pack directory against what was in the repo at that tag
+        if   git diff --quiet -wb $packtag HEAD -- . ../../local/$pack >/dev/null 2>&1 
+        then
+            printf "     No changes detected\n"
+        else
+            # There were changes, let's count them
+            changecount=$(git log --oneline $packtag..HEAD -- . ../../local/$pack | wc -l)
+
+            printf "  ++ $changecount commits detected, updating package.json version to ${tagver}+${changecount}\n"
+
+            # Modify the package.json file, this new version info is visible
+            # in the pack management UI.
+            jq <package.json >package.json.new \
+                --arg newversion "${tagver}+${changecount}" \
+               '.version=$newversion | .'
+            jq -c . <package.json.new >package.json && rm package.json.new
+        fi # git diff
+
+        # At the end of the pack, we go back up to our previous directory
+        popd >/dev/null 2>/dev/null
+    done
+
+    # Done with worker group $group
+    printf "\n\n"
+done
+printf "Pack version update script - completed $(date)\n\n"

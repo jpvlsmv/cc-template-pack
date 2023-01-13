@@ -2,23 +2,17 @@ name: Pull pack from Stream instance
 on: 
   workflow_dispatch:
     inputs:
-      api-base-url:
+      CRIBL_API_URL:
         description: Cribl API base url
         required: true
-      bearer-token:
-        description: Token for API authentication
-        required: true
-
+      CRIBL_USER:
+        description: Username for API authentication
+      CRIBL_PASSWORD:
+        description: Password for API authentication
+      CRIBL_TOKEN:
+        description: Pre-authenticated (Bearer) Token for API
+        
 jobs:
-  connectivity-test:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Checking health (non-authenticated)"
-      - run: |
-          curl -sS "${{ inputs.api-base-url}}v1/health" -H "accept: application/json"
-      - run: echo "Checking system info (authenticated)"
-      - run: |
-          curl -sS "${{ inputs.api-base-url}}v1/system/info" -H "accept: application/json" -H "Authorization: Bearer ${{ inputs.bearer-token }}"
   fetch-pack:
     runs-on: ubuntu-latest
     steps:
@@ -27,10 +21,8 @@ jobs:
 
       - run: |
           echo "Extracting pack modifications for ${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}"
-          curl -v "${{ inputs.api-base-url}}v1/m/default/packs/${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}/export?mode=merge&dest=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" \
-            -H "Authorization: Bearer ${{ inputs.bearer-token }}" | tar xvfz -
-      - run: |
-          jq . < package.json > /tmp/package.json && cp /tmp/package.json package.json && rm /tmp/package.json
+          ./scripts/pull-pack.sh ${CRIBL_API_URL}
+          
       - name: Commit and send changes to repository
         uses: EndBug/add-and-commit@v9.1.1
         with:
