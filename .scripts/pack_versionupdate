@@ -88,12 +88,12 @@ do
         printf "against tagged version ${tagver}.\n"
 
         # Check this pack directory against what was in the repo at that tag
-        if   git diff --quiet -wb $packtag HEAD -- . $groupdir/local/$pack >/dev/null 2>&1 
+        if   git diff --quiet -wb $packtag HEAD -- . ../../local/$pack >/dev/null 2>&1 
         then
             printf "     No changes detected\n"
         else
             # There were changes, let's count them
-            changecount=$(git log --oneline $packtag..HEAD -- . $groupdir/local/$pack | wc -l)
+            changecount=$(git log --oneline $packtag..HEAD -- . ../../local/$pack | wc -l)
 
             printf "  ++ $changecount commits detected, updating package.json version to ${tagver}+${changecount}\n"
 
